@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flux Panel</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="navbar">
+    <a class="active">Dashboard</a>
+    <a>Storage</a>
+    <a>Drives</a>
+    <a>Alert Log</a>
+    <a>Settings</a>
+</div>
+
+<div class="container">
+
+    <div class="row">
+        <div class="card stat-card">
+            <div class="stat-label">CPU</div>
+            <div class="stat-value" id="cpuValue">0%</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-label">Memory</div>
+            <div class="stat-value" id="ramValue">0%</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-label">GPU Temp</div>
+            <div class="stat-value" id="gpuValue">--°C</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-label">Storage</div>
+            <div class="stat-value" id="storageValue">--%</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="card wide-card">
+            <div class="stat-label">CPU USAGE (%)</div>
+            <canvas id="cpuChart"></canvas>
+        </div>
+
+        <div class="card wide-card">
+            <div class="stat-label">MEMORY USAGE (%)</div>
+            <canvas id="ramChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
