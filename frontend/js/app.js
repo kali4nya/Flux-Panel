@@ -1,5 +1,4 @@
 const API_BASE = "http://192.168.31.106:5000"; 
-// If same origin, use: const API_BASE = "";
 
 const cpuCtx = document.getElementById("cpuChart");
 const ramCtx = document.getElementById("ramChart");
