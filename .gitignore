@@ -1,0 +1,22 @@
+# Ignore all Python bytecode caches
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore Python virtual environments (if you create one)
+venv/
+.env/
+.env.bak/
+
+# Ignore OS and editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Optional: ignore log files
+*.log
+
+# Optional: ignore IDE project files (PyCharm, VSCode, etc.)
+.idea/
+.vscode/
