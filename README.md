@@ -29,7 +29,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-4.Open your browser and go to [localhost:5000](127.0.0.1:5000)
+4. Open your browser and go to [localhost:5000](http://127.0.0.1:5000)
 
 
 ## Why Flux-Panel?
