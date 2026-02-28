@@ -7,7 +7,7 @@ from stats.ram import get_ram_stats
 from stats.gpu import get_gpu_stats
 from stats.storage import get_storage_stats
 
-import config  # <-- import the config file
+import config
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins=config.CORS_ALLOWED_ORIGINS)

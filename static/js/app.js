@@ -110,11 +110,17 @@ function initSocket() {
         // Drives
         const drivesContainer = document.getElementById("drivesContainer");
         drivesContainer.innerHTML = ""; // clear previous
+
         if (Array.isArray(data.storage) && data.storage.length > 0) {
             data.storage.forEach((drive) => {
+                // Convert MB to GB only if > 1024
+                let used = drive.used_gb ?? 0;
+                let total = drive.total_gb ?? 0;
+
+                if (used > 1024) used = used / 1024;
+                if (total > 1024) total = total / 1024;
+
                 const usagePercent = drive.usage_percent ?? 0;
-                const used = drive.used_gb ?? 0;
-                const total = drive.total_gb ?? 0;
                 const label = drive.mount ?? drive.name ?? "Drive";
 
                 const driveCard = document.createElement("div");
