@@ -2,22 +2,32 @@
 <html>
 <head>
     <title>Flux Panel</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Flask static linking -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <div class="navbar">
-    <a class="active">Dashboard</a>
-    <a>Storage</a>
-    <a>Drives</a>
-    <a>Alert Log</a>
-    <a>Settings</a>
+    <a class="active" href="/">Dashboard</a>
+    <a href="#">Storage</a>
+    <a href="#">Drives</a>
+    <a href="#">Alert Log</a>
+    <a href="#">Settings</a>
 </div>
 
 <div class="container">
 
     <div class="row">
+        <div class="card wide-card">
+            <div class="stat-label">Polling Rate</div>
+            <div class="slider-container">
+                <input type="range" id="pollingSlider" min="250" max="2000" step="250" value="1000">
+                <span id="pollingValue">1000 ms</span>
+            </div>
+        </div>
         <div class="card stat-card">
             <div class="stat-label">CPU</div>
             <div class="stat-value" id="cpuValue">0%</div>
@@ -53,6 +63,8 @@
 
 </div>
 
-<script src="js/app.js"></script>
+<!-- Flask static JS -->
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
 </body>
 </html>
