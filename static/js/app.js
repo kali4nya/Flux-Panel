@@ -113,12 +113,18 @@ function initSocket() {
 
         if (Array.isArray(data.storage) && data.storage.length > 0) {
             data.storage.forEach((drive) => {
-                // Convert MB to GB only if > 1024
                 let used = drive.used_gb ?? 0;
                 let total = drive.total_gb ?? 0;
 
-                if (used > 1024) used = used / 1024;
-                if (total > 1024) total = total / 1024;
+                // Determine units dynamically
+                let usedValue = used;
+                let totalValue = total;
+                let unit = "GB";
+
+                if (used > 1024) usedValue = used / 1024;
+                else unit = "MB";  // if either value is below 1024, switch to MB
+                if (total > 1024) totalValue = total / 1024;
+                else if (unit !== "GB") unit = "MB"; // keep MB if both are under 1024
 
                 const usagePercent = drive.usage_percent ?? 0;
                 const label = drive.mount ?? drive.name ?? "Drive";
@@ -129,7 +135,7 @@ function initSocket() {
                     <div class="stat-label">${label}</div>
                     <div class="stat-value">
                         ${usagePercent}% 
-                        <div class="stat-subvalue">(${used.toFixed(2)} / ${total.toFixed(2)} GB)</div>
+                        <div class="stat-subvalue">(${usedValue.toFixed(2)} / ${totalValue.toFixed(2)} ${unit})</div>
                     </div>
                 `;
                 drivesContainer.appendChild(driveCard);
