@@ -23,8 +23,19 @@ body {
     color: white;
 }
 
-.container {
+main {
     padding: 40px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .row {
@@ -38,6 +49,7 @@ body {
     border: 1px solid #1a1d23;
     border-radius: 12px;
     padding: 18px;
+    width: 100%;
 }
 
 .stat-card {
@@ -53,10 +65,6 @@ body {
 .stat-value {
     font-size: 22px;
     font-weight: 600;
-}
-
-.wide-card {
-    flex: 1;
 }
 
 canvas {

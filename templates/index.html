@@ -15,10 +15,10 @@
     <a href="#">Settings</a>
 </div>
 
-<div class="container">
+<main>
 
     <!-- STAT CARDS -->
-    <div class="row">
+    <div class="row container">
         <div class="card stat-card">
             <div class="stat-label">CPU Usage</div>
             <div class="stat-value" id="cpuUtilization">0%</div>
@@ -46,7 +46,7 @@
     </div>
 
     <!-- STORAGE / DRIVES -->
-    <div class="row" id="drivesContainer">
+    <div class="row container" id="drivesContainer">
         <!-- Drives stats will be injected dynamically -->
     </div>
 
@@ -60,19 +60,19 @@
     </div>
 
     <!-- GRAPHS -->
-    <div class="row">
-        <div class="card wide-card">
+    <div class="row grid">
+        <div class="card">
             <div class="stat-label">CPU USAGE (%)</div>
             <canvas id="cpuChart"></canvas>
         </div>
 
-        <div class="card wide-card">
+        <div class="card">
             <div class="stat-label">MEMORY USAGE (%)</div>
             <canvas id="ramChart"></canvas>
         </div>
     </div>
 
-</div>
+</main>
 
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
