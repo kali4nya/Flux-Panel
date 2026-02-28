@@ -3,9 +3,7 @@
 <head>
     <title>Flux Panel</title>
 
-    <!-- Flask static linking -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -20,14 +18,8 @@
 
 <div class="container">
 
+    <!-- STAT CARDS -->
     <div class="row">
-        <div class="card wide-card">
-            <div class="stat-label">Polling Rate</div>
-            <div class="slider-container">
-                <input type="range" id="pollingSlider" min="250" max="2000" step="250" value="1000">
-                <span id="pollingValue">1000 ms</span>
-            </div>
-        </div>
         <div class="card stat-card">
             <div class="stat-label">CPU</div>
             <div class="stat-value" id="cpuValue">0%</div>
@@ -49,6 +41,20 @@
         </div>
     </div>
 
+    <!-- POLLING CONTROL (ABOVE GRAPHS) -->
+    <div class="row center-control">
+        <div class="control-box">
+            <span>Polling</span>
+            <input type="range"
+                   id="pollingSlider"
+                   min="250"
+                   max="2000"
+                   step="250">
+            <span id="pollingValue"></span>
+        </div>
+    </div>
+
+    <!-- GRAPHS -->
     <div class="row">
         <div class="card wide-card">
             <div class="stat-label">CPU USAGE (%)</div>
@@ -63,7 +69,7 @@
 
 </div>
 
-<!-- Flask static JS -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
 </body>

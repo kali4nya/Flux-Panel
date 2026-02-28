@@ -1,16 +1,27 @@
-const API_BASE = "";
 const MAX_POINTS = 15;
 
-let pollingInterval = 1000;
-let pollingTimer;
+let socket;
+let slider = document.getElementById("pollingSlider");
+let pollingLabel = document.getElementById("pollingValue");
+
+/* ------------------ COOKIE ------------------ */
+
+function getPollingFromCookie() {
+    const match = document.cookie.match(/pollingRate=(\d+)/);
+    return match ? parseInt(match[1]) : 1000;
+}
+
+function setPollingCookie(value) {
+    document.cookie = `pollingRate=${value}; path=/; max-age=31536000`;
+}
+
+/* ------------------ CHART ------------------ */
 
 function createGradient(ctx, color) {
     const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-
     gradient.addColorStop(0, color + "88");
     gradient.addColorStop(0.4, color + "44");
     gradient.addColorStop(1, color + "00");
-
     return gradient;
 }
 
@@ -41,29 +52,18 @@ function createChart(canvasId, lineColor) {
                 intersect: false
             },
             scales: {
-                x: {
-                    display: false,
-                    grid: { display: false }
-                },
+                x: { display: false },
                 y: {
                     min: 0,
                     max: 100,
-                    ticks: {
-                        stepSize: 20,
-                        color: "#6b7280"
-                    },
-                    grid: {
-                        color: "#1f232b"
-                    }
+                    ticks: { stepSize: 20 },
+                    grid: { color: "#1f232b" }
                 }
             },
             plugins: {
                 legend: { display: false },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: "#111418",
-                    borderColor: "#1f232b",
-                    borderWidth: 1,
                     displayColors: false,
                     callbacks: {
                         title: () => "",
@@ -84,11 +84,21 @@ function pushData(chart, value) {
     chart.update();
 }
 
-async function fetchStats() {
-    try {
-        const res = await fetch(`${API_BASE}/api/stats`);
-        const data = await res.json();
+/* ------------------ SOCKET.IO ------------------ */
 
+function initSocket() {
+    socket = io(); // Connect to the server
+
+    // Send initial polling interval from cookie
+    const interval = getPollingFromCookie();
+    socket.emit("set_config", { interval });
+
+    // Update slider display
+    slider.value = interval;
+    pollingLabel.innerText = interval + " ms";
+
+    // Listen for stats updates
+    socket.on("stats_update", (data) => {
         const cpuUsage = data.cpu?.usage_percent ?? 0;
         const ramUsage = data.ram?.usage_percent ?? 0;
 
@@ -107,37 +117,28 @@ async function fetchStats() {
 
         pushData(cpuChart, cpuUsage);
         pushData(ramChart, ramUsage);
+    });
 
-    } catch (err) {
-        console.error("Failed to fetch stats:", err);
-    }
+    // Optional: Listen for confirmation from server
+    socket.on("config_updated", (data) => {
+        console.log("Polling interval updated on server:", data.interval);
+    });
 }
 
-function startPolling() {
-    clearInterval(pollingTimer);
-    pollingTimer = setInterval(fetchStats, pollingInterval);
-}
-
-const slider = document.getElementById("pollingSlider");
-const pollingLabel = document.getElementById("pollingValue");
+/* ------------------ SLIDER ------------------ */
 
 function updatePolling() {
-    // Invert value so right = faster
-    const max = parseInt(slider.max);
-    const min = parseInt(slider.min);
+    const newInterval = parseInt(slider.value);
+    pollingLabel.innerText = newInterval + " ms";
+    setPollingCookie(newInterval);
 
-    const inverted = max - slider.value + min;
-
-    pollingInterval = inverted;
-    pollingLabel.innerText = inverted + " ms";
-
-    startPolling();
+    if (socket) {
+        socket.emit("set_config", { interval: newInterval });
+    }
 }
 
 slider.addEventListener("input", updatePolling);
 
-// Initialize correctly on load
-updatePolling();
+/* ------------------ INIT ------------------ */
 
-startPolling();
-fetchStats();
+initSocket();
