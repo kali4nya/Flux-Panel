@@ -6,8 +6,11 @@ let pollingTimer;
 
 function createGradient(ctx, color) {
     const gradient = ctx.createLinearGradient(0, 0, 0, 250);
-    gradient.addColorStop(0, color + "55");
+
+    gradient.addColorStop(0, color + "88");
+    gradient.addColorStop(0.4, color + "44");
     gradient.addColorStop(1, color + "00");
+
     return gradient;
 }
 
