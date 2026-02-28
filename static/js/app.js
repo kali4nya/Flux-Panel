@@ -1,11 +1,11 @@
 const MAX_POINTS = 15;
 
+/* ------------------ SOCKET & POLLING ------------------ */
 let socket;
-let slider = document.getElementById("pollingSlider");
+let pollingSlider = document.getElementById("pollingSlider");
 let pollingLabel = document.getElementById("pollingValue");
 
 /* ------------------ COOKIE ------------------ */
-
 function getPollingFromCookie() {
     const match = document.cookie.match(/pollingRate=(\d+)/);
     return match ? parseInt(match[1]) : 1000;
@@ -16,7 +16,6 @@ function setPollingCookie(value) {
 }
 
 /* ------------------ CHART ------------------ */
-
 function createGradient(ctx, color) {
     const gradient = ctx.createLinearGradient(0, 0, 0, 250);
     gradient.addColorStop(0, color + "88");
@@ -47,18 +46,10 @@ function createChart(canvasId, lineColor) {
             animation: false,
             responsive: true,
             maintainAspectRatio: false,
-            interaction: {
-                mode: "nearest",
-                intersect: false
-            },
+            interaction: { mode: "nearest", intersect: false },
             scales: {
                 x: { display: false },
-                y: {
-                    min: 0,
-                    max: 100,
-                    ticks: { stepSize: 20 },
-                    grid: { color: "#1f232b" }
-                }
+                y: { min: 0, max: 100, ticks: { stepSize: 20 }, grid: { color: "#1f232b" } }
             },
             plugins: {
                 legend: { display: false },
@@ -85,50 +76,73 @@ function pushData(chart, value) {
 }
 
 /* ------------------ SOCKET.IO ------------------ */
-
 function initSocket() {
-    socket = io(); // Connect to the server
+    socket = io();
 
-    // Send initial polling interval from cookie
-    const interval = getPollingFromCookie();
-    socket.emit("set_config", { interval });
+    // Send initial polling interval
+    const initialInterval = getPollingFromCookie();
+    socket.emit("set_config", { interval: initialInterval });
 
-    // Update slider display
-    slider.value = interval;
-    pollingLabel.innerText = interval + " ms";
+    pollingSlider.value = initialInterval;
+    pollingLabel.innerText = initialInterval + " ms";
 
-    // Listen for stats updates
     socket.on("stats_update", (data) => {
-        const cpuUsage = data.cpu?.usage_percent ?? 0;
-        const ramUsage = data.ram?.usage_percent ?? 0;
+        // CPU
+        const cpuUtilization = data.cpu?.usage_percent ?? 0;
+        const cpuTemperature = data.cpu?.temperature_c != null ? data.cpu.temperature_c + "°C" : "--°C";
+        document.getElementById("cpuUtilization").innerText = cpuUtilization + "%";
+        document.getElementById("cpuTemperature").innerText = cpuTemperature;
 
-        document.getElementById("cpuValue").innerText = cpuUsage + "%";
-        document.getElementById("ramValue").innerText = ramUsage + "%";
+        // RAM
+        const ramUsagePercent = data.ram?.usage_percent ?? 0;
+        const ramUsed = data.ram?.used_mb ?? 0;
+        const ramTotal = data.ram?.total_mb ?? 0;
+        document.getElementById("ramUtilization").innerHTML = `
+            ${ramUsagePercent}%<div class="stat-subvalue">(${ramUsed.toFixed(1)} / ${ramTotal.toFixed(1)} MB)</div>
+        `;
 
-        document.getElementById("gpuValue").innerText =
-            data.gpu?.temperature_c != null
-                ? data.gpu.temperature_c + "°C"
-                : "--°C";
+        // GPU
+        const gpuUtilization = data.gpu?.usage_percent ?? 0;
+        const gpuTemperature = data.gpu?.temperature_c != null ? data.gpu.temperature_c + "°C" : "--°C";
+        document.getElementById("gpuUtilization").innerText = gpuUtilization + "%";
+        document.getElementById("gpuTemperature").innerText = gpuTemperature;
 
+        // Drives
+        const drivesContainer = document.getElementById("drivesContainer");
+        drivesContainer.innerHTML = ""; // clear previous
         if (Array.isArray(data.storage) && data.storage.length > 0) {
-            document.getElementById("storageValue").innerText =
-                (data.storage[0].usage_percent ?? 0) + "%";
+            data.storage.forEach((drive) => {
+                const usagePercent = drive.usage_percent ?? 0;
+                const used = drive.used_gb ?? 0;
+                const total = drive.total_gb ?? 0;
+                const label = drive.mount ?? drive.name ?? "Drive";
+
+                const driveCard = document.createElement("div");
+                driveCard.className = "card stat-card";
+                driveCard.innerHTML = `
+                    <div class="stat-label">${label}</div>
+                    <div class="stat-value">
+                        ${usagePercent}% 
+                        <div class="stat-subvalue">(${used.toFixed(2)} / ${total.toFixed(2)} GB)</div>
+                    </div>
+                `;
+                drivesContainer.appendChild(driveCard);
+            });
         }
 
-        pushData(cpuChart, cpuUsage);
-        pushData(ramChart, ramUsage);
+        // Update charts
+        pushData(cpuChart, cpuUtilization);
+        pushData(ramChart, ramUsagePercent);
     });
 
-    // Optional: Listen for confirmation from server
     socket.on("config_updated", (data) => {
         console.log("Polling interval updated on server:", data.interval);
     });
 }
 
 /* ------------------ SLIDER ------------------ */
-
 function updatePolling() {
-    const newInterval = parseInt(slider.value);
+    const newInterval = parseInt(pollingSlider.value);
     pollingLabel.innerText = newInterval + " ms";
     setPollingCookie(newInterval);
 
@@ -137,8 +151,7 @@ function updatePolling() {
     }
 }
 
-slider.addEventListener("input", updatePolling);
+pollingSlider.addEventListener("input", updatePolling);
 
 /* ------------------ INIT ------------------ */
-
 initSocket();

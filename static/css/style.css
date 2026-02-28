@@ -108,3 +108,9 @@ input[type="range"]::-webkit-slider-thumb {
     width: 180px;
     transform: scaleX(-1);
 }
+
+.stat-subvalue {
+    font-size: 0.55em;
+    color: #aaa;
+    margin-top: 2px;
+}

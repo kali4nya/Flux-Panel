@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Flux Panel</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -21,35 +20,41 @@
     <!-- STAT CARDS -->
     <div class="row">
         <div class="card stat-card">
-            <div class="stat-label">CPU</div>
-            <div class="stat-value" id="cpuValue">0%</div>
+            <div class="stat-label">CPU Usage</div>
+            <div class="stat-value" id="cpuUtilization">0%</div>
         </div>
 
         <div class="card stat-card">
-            <div class="stat-label">Memory</div>
-            <div class="stat-value" id="ramValue">0%</div>
+            <div class="stat-label">CPU Temp</div>
+            <div class="stat-value" id="cpuTemperature">--°C</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-label">Memory Usage</div>
+            <div class="stat-value" id="ramUtilization">0%</div>
+        </div>
+
+        <div class="card stat-card">
+            <div class="stat-label">GPU Usage</div>
+            <div class="stat-value" id="gpuUtilization">0%</div>
         </div>
 
         <div class="card stat-card">
             <div class="stat-label">GPU Temp</div>
-            <div class="stat-value" id="gpuValue">--°C</div>
-        </div>
-
-        <div class="card stat-card">
-            <div class="stat-label">Storage</div>
-            <div class="stat-value" id="storageValue">--%</div>
+            <div class="stat-value" id="gpuTemperature">--°C</div>
         </div>
     </div>
 
-    <!-- POLLING CONTROL (ABOVE GRAPHS) -->
+    <!-- STORAGE / DRIVES -->
+    <div class="row" id="drivesContainer">
+        <!-- Drives stats will be injected dynamically -->
+    </div>
+
+    <!-- POLLING CONTROL -->
     <div class="row center-control">
         <div class="control-box">
             <span>Polling</span>
-            <input type="range"
-                   id="pollingSlider"
-                   min="250"
-                   max="2000"
-                   step="250">
+            <input type="range" id="pollingSlider" min="250" max="2000" step="250">
             <span id="pollingValue"></span>
         </div>
     </div>
