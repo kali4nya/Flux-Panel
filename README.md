@@ -18,7 +18,7 @@ The whole thing is build in a way where you can easily build you own frontend if
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/kali4nya/Flux-Panel
+git clone [https://github.com/kali4nya/Flux-Panel](https://github.com/kali4nya/Flux-Panel.git)
 ```
 
 2. Install the required packages:
