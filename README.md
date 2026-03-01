@@ -1,6 +1,6 @@
 # Flux-Panel
 
-Flux-Panel is a simple, lightweight, easy to deploy server management dashbord
+Flux-Panel is a simple, open-source, lightweight, easy to deploy server management dashbord
 It's designed to be minimal, modern, and easy to use, with all configuration you may need
 The whole thing is build in a way where you can easily build you own frontend if you want
 
@@ -41,3 +41,4 @@ python main.py
 It’s designed to be quick to set up, easy to use, and visually clean without extra fluff. Perfect if you want a modern server dashboard that works immediately with minimal effort.
 
 still under early development... 
+feel free to put ideas, comment, issues everything in the issues tab, any feedback welcome
