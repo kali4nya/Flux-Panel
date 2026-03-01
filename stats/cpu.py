@@ -7,17 +7,28 @@ psutil.cpu_percent()
 def get_cpu_temperature_linux():
     try:
         temps = psutil.sensors_temperatures()
-        if temps:
-            for key in ["coretemp", "cpu_thermal"]:
-                if key in temps:
-                    core_temps = temps[key]
-                    if core_temps:
-                        avg = sum([t.current for t in core_temps]) / len(core_temps)
-                        return round(avg, 1)
-            for sensor_list in temps.values():
-                if sensor_list:
-                    avg = sum([t.current for t in sensor_list]) / len(sensor_list)
-                    return round(avg, 1)
+        if not temps:
+            return None
+
+        cpu_temp = None
+        ignored_sensors = {"nvme", "bat", "pch", "acpitz", "thinkpad-isa-0000"}
+
+        for sensor_name, entries in temps.items():
+            if sensor_name.lower() in ignored_sensors:
+                continue
+            for entry in entries:
+                # Consider labels that look like CPU cores or packages
+                if entry.label and any(x in entry.label.lower() for x in ["core", "tctl", "package", "cpu"]):
+                    if cpu_temp is None or entry.current > cpu_temp:
+                        cpu_temp = entry.current
+                # Fallback if label is empty but sensor name looks CPU-ish
+                elif entry.current and "cpu" in sensor_name.lower():
+                    if cpu_temp is None or entry.current > cpu_temp:
+                        cpu_temp = entry.current
+
+        if cpu_temp is not None:
+            return round(cpu_temp, 1)
+
     except Exception:
         pass
     return None
