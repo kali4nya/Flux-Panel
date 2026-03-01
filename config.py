@@ -16,9 +16,9 @@ CORS_ALLOWED_ORIGINS = "*" # dont touch this one
 MAX_GRAPH_POINTS = 20 # Max data points to keep for graphin
 
 DYNAMIC_DRIVE_CAPACITY_COLORS = True # If true, drive boxes will change color based on capacity (green->yellow->red) (DISABLES STORAGE_ALERT_COLOR)
-DYNAMIC_DRIVE_CAPACITY_COLOR_LOW = "#308833"
-DYNAMIC_DRIVE_CAPACITY_COLOR_MEDIUM = "#B38118"
-DYNAMIC_DRIVE_CAPACITY_COLOR_HIGH = "#6E162F"
+DYNAMIC_DRIVE_CAPACITY_COLOR_LOW = "#308833" # kinda green
+DYNAMIC_DRIVE_CAPACITY_COLOR_MEDIUM = "#B38118" # kinda yellow
+DYNAMIC_DRIVE_CAPACITY_COLOR_HIGH = "#6E162F" # kinda red
 
 STORAGE_ALERT = False # If true, storage usage will be highlighted when exceeding threshold
 STORAGE_ALERT_THRESHOLD_PERCENT = 90 # Alert on storage usage exceeding this percentage
