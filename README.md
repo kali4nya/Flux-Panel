@@ -39,3 +39,5 @@ python main.py
 ## Why Flux-Panel?
 
 It’s designed to be quick to set up, easy to use, and visually clean without extra fluff. Perfect if you want a modern server dashboard that works immediately with minimal effort.
+
+still under early development... 
