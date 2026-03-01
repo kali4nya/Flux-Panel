@@ -22,6 +22,8 @@ clients = {}  # { session_id: { "interval": 1000 } }
 # ----------------------------
 @app.route("/")
 def index():
+    
+    # variables going to index.html, you can add more if you want, just make sure to add them to config.py and pass them here
     return render_template(
         "index.html",
         min_interval_ms=config.MIN_INTERVAL_MS,

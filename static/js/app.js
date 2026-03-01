@@ -138,7 +138,7 @@ function initSocket() {
                     }
                     driveCard.style.backgroundColor = color;
                 } else {
-                    if (STORAGE_ALERT && usagePercent >= STORAGE_ALERT_THRESHOLD) {
+                    if (STORAGE_ALERT && usagePercent >= STORAGE_ALERT_THRESHOLD_PERCENT) {
                         driveCard.style.backgroundColor = STORAGE_ALERT_COLOR;
                     } else {
                         driveCard.style.backgroundColor = ""; // default
