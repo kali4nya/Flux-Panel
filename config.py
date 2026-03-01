@@ -32,6 +32,6 @@ FS_THEME = {
     "vfat":    {"read": "#2dd4bf", "write": "#ec4899"}, # Teal / Pink
     "ext4":    {"read": "#60a5fa", "write": "#22c55e"}, # Light Blue / Green
     "exFAT":   {"read": "#a78bfa", "write": "#8b5cf6"}, # Light Purple / Violet
-    "APFS":    {"read": "#22d3ee", "write": "#0ea5e9"}, # Cyan / Sky Blue
+    "APFS":    {"read": "#22d3ee", "write": "#2143da"}, # Cyan / Sky Blue
     "DEFAULT": {"read": "#94a3b8", "write": "#64748b"}  # Slate / Grey
 }
