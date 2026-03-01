@@ -13,7 +13,7 @@ INTERVAL_STEP_MS = 250 # step for slider and clamping, trust me 250 is fine
 CORS_ALLOWED_ORIGINS = "*" # dont touch this one
 
 #Real changable settings
-MAX_GRAPH_POINTS = 20 # Max data points to keep for graphin
+MAX_GRAPH_POINTS = 20 # Max data points to keep for graphin 
 
 DYNAMIC_DRIVE_CAPACITY_COLORS = False # If true, drive boxes will change color based on capacity (green->yellow->red) (DISABLES STORAGE_ALERT_COLOR)
 DYNAMIC_DRIVE_CAPACITY_COLOR_LOW = "#308833" # kinda green
@@ -32,6 +32,6 @@ FS_THEME = {
     "vfat":    {"read": "#2dd4bf", "write": "#ec4899"}, # Teal / Pink
     "ext4":    {"read": "#60a5fa", "write": "#22c55e"}, # Light Blue / Green
     "exFAT":   {"read": "#a78bfa", "write": "#8b5cf6"}, # Light Purple / Violet
-    "APFS":    {"read": "#22d3ee", "write": "#2143da"}, # Cyan / Sky Blue
+    "APFS":    {"read": "#22d3ee", "write": "#2143da"}, # Cyan / Dark Blue
     "DEFAULT": {"read": "#94a3b8", "write": "#64748b"}  # Slate / Grey
 }

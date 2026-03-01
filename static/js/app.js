@@ -2,6 +2,7 @@
 let socket;
 let pollingSlider = document.getElementById("pollingSlider");
 let pollingLabel = document.getElementById("pollingValue");
+let debounceTimer; // Added for performance optimization
 
 /* ------------------ COOKIE ------------------ */
 function getPollingFromCookie() {
@@ -130,10 +131,8 @@ function initSocket() {
                 if (DYNAMIC_DRIVE_COLORS) {
                     let color;
                     if (usagePercent <= 50) {
-                        // interpolate LOW → MEDIUM
                         color = interpolateColor(DYNAMIC_DRIVE_COLOR_LOW, DYNAMIC_DRIVE_COLOR_MEDIUM, usagePercent / 50);
                     } else {
-                        // interpolate MEDIUM → HIGH
                         color = interpolateColor(DYNAMIC_DRIVE_COLOR_MEDIUM, DYNAMIC_DRIVE_COLOR_HIGH, (usagePercent - 50) / 50);
                     }
                     driveCard.style.backgroundColor = color;
@@ -141,7 +140,7 @@ function initSocket() {
                     if (STORAGE_ALERT && usagePercent >= STORAGE_ALERT_THRESHOLD_PERCENT) {
                         driveCard.style.backgroundColor = STORAGE_ALERT_COLOR;
                     } else {
-                        driveCard.style.backgroundColor = ""; // default
+                        driveCard.style.backgroundColor = ""; 
                     }
                 }
 
@@ -163,20 +162,27 @@ function initSocket() {
     socket.on("config_updated", (data) => {
         console.log("Polling interval updated on server:", data.interval);
     });
+
+    // Added event listener here to keep logic encapsulated
+    pollingSlider.addEventListener("input", updatePolling);
 }
 
-/* ------------------ SLIDER ------------------ */
+/* ------------------ SLIDER (DEBOUNCED) ------------------ */
 function updatePolling() {
     const newInterval = parseInt(pollingSlider.value);
+    
+    // Immediate UI feedback
     pollingLabel.innerText = newInterval + " ms";
-    setPollingCookie(newInterval);
 
-    if (socket) {
-        socket.emit("set_config", { interval: newInterval });
-    }
+    // Debounce: Wait 300ms before hitting the network/cookie
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        setPollingCookie(newInterval);
+        if (socket) {
+            socket.emit("set_config", { interval: newInterval });
+        }
+    }, 300);
 }
-
-pollingSlider.addEventListener("input", updatePolling);
 
 /* ------------------ INIT ------------------ */
 window.addEventListener("load", () => {

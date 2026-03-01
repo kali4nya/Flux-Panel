@@ -116,6 +116,7 @@ main {
     height: 80px !important;
 }
 
+/* ------------------ CONTROLS (Matched to style.css) ------------------ */
 .center-control {
     display: flex;
     justify-content: center;
@@ -123,20 +124,39 @@ main {
 }
 
 .control-box {
-    background: #0f1115;
-    padding: 12px 24px;
-    border-radius: 30px;
+    background: #111418;
+    padding: 10px 18px;
+    border-radius: 8px;
     border: 1px solid #1a1d23;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
     color: #7c8594;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 input[type="range"] {
+    appearance: none;
+    height: 4px;
+    background: #1f232b;
+    border-radius: 4px;
+    outline: none;
     cursor: pointer;
-    accent-color: #3b82f6;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #3b82f6;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* visually invert slider */
+.control-box input[type="range"] {
+    width: 180px;
+    transform: scaleX(-1);
 }
 
 #pollingValue {
