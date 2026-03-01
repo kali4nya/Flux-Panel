@@ -1,3 +1,4 @@
 Flask
 Flask-SocketIO
 psutil
+pywin32 ; sys_platform == "win32"

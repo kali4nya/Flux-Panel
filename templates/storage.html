@@ -14,7 +14,27 @@
 </div>
 
 <main>
+    <script>
+        const DEFAULT_POLLING = {{ default_interval }};
+        const MIN_INTERVAL_MS = {{ min_interval_ms }};
+        const MAX_INTERVAL_MS = {{ max_interval_ms }};
+        const INTERVAL_STEP_MS = {{ interval_step_ms }};
+        const FS_THEME = {{ fs_theme | tojson }};
+    </script>
+
     <div class="container" id="drivesContainer"></div>
+
+    <div class="row center-control">
+        <div class="control-box">
+            <span>Polling Speed</span>
+            <input type="range" id="pollingSlider" 
+                   min="{{ min_interval_ms }}" 
+                   max="{{ max_interval_ms }}" 
+                   step="{{ interval_step_ms }}" 
+                   value="{{ default_interval }}">
+            <span id="pollingValue"></span>
+        </div>
+    </div>
 </main>
 
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>

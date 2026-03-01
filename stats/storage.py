@@ -3,94 +3,164 @@ import platform
 import time
 import os
 
-def get_storage_stats(interval=1):
-    """
-    Returns a list of dicts with storage info:
-    - device: device path (e.g., /dev/sda1 or C:\)
-    - fstype: filesystem type
-    - mount: mount point
-    - read_bytes / write_bytes: cumulative bytes since boot
-    - read_speed_Bps / write_speed_Bps: measured over interval
-    - total_mb / used_mb / usage_percent
-    """
+# --------------------------------------------------
+# GLOBAL STATE
+# --------------------------------------------------
+_previous_io = None
+_previous_time = None
+_win_counters = {}
+
+def get_storage_stats():
+    global _previous_io, _previous_time
+
     os_type = platform.system()
-    
+    current_io = psutil.disk_io_counters(perdisk=True)
+    current_time = time.time()
+
+    if _previous_io is None:
+        _previous_io = current_io
+        _previous_time = current_time
+
+    delta_time = current_time - _previous_time
+    if delta_time <= 0:
+        delta_time = 1
+
     if os_type == "Windows":
-        return _get_windows_storage_stats(interval)
+        # Pass the global state data to the windows function
+        stats = _get_windows_storage_stats(current_io, delta_time)
     elif os_type == "Linux":
-        return _get_linux_storage_stats(interval)
+        stats = _get_linux_storage_stats(current_io, delta_time)
     else:
         raise NotImplementedError(f"Unsupported OS: {os_type}")
 
-
-def _get_windows_storage_stats(interval=1):
-    io_start = psutil.disk_io_counters(perdisk=True)
-    time.sleep(interval)
-    io_end = psutil.disk_io_counters(perdisk=True)
-
-    stats = []
-    partitions = psutil.disk_partitions(all=False)
-    for p in partitions:
-        device_name = p.device  # e.g., 'C:\\'
-        mount = p.mountpoint    # e.g., 'C:\\'
-        fstype = p.fstype
-
-        base_device = device_name.rstrip('\\')  # 'C:'
-
-        read_bytes = io_end.get(base_device, io_start[base_device]).read_bytes - io_start.get(base_device, io_start[base_device]).read_bytes if base_device in io_start else 0
-        write_bytes = io_end.get(base_device, io_start[base_device]).write_bytes - io_start.get(base_device, io_start[base_device]).write_bytes if base_device in io_start else 0
-
-        usage = psutil.disk_usage(mount)
-
-        stats.append({
-            "device": device_name,
-            "fstype": fstype,
-            "mount": mount,
-            "read_bytes": usage.read_bytes if hasattr(usage, 'read_bytes') else 0,
-            "read_speed_Bps": read_bytes / interval,
-            "write_bytes": usage.write_bytes if hasattr(usage, 'write_bytes') else 0,
-            "write_speed_Bps": write_bytes / interval,
-            "total_mb": usage.total / (1024*1024),
-            "used_mb": usage.used / (1024*1024),
-            "usage_percent": usage.percent
-        })
+    _previous_io = current_io
+    _previous_time = current_time
     return stats
 
+# --------------------------------------------------
+# WINDOWS implementation
+# --------------------------------------------------
 
-def _get_linux_storage_stats(interval=1):
-    partitions = [p for p in psutil.disk_partitions(all=False) if os.path.exists(p.mountpoint)]
-    mount_to_device = {p.mountpoint: p.device for p in partitions}
-
-    io_start = psutil.disk_io_counters(perdisk=True)
-    time.sleep(interval)
-    io_end = psutil.disk_io_counters(perdisk=True)
-
+def _get_windows_storage_stats(current_io, delta_time):
+    
+    #needed only for windows storage stats
+    import win32pdh # From pywin32
+    
+    global _win_counters
     stats = []
-    for mount, device_path in mount_to_device.items():
+    mb_factor = 1024 * 1024
+    
+    partitions = psutil.disk_partitions(all=False)
+
+    for part in partitions:
+        drive_letter = part.mountpoint.strip("\\") # "C:"
+        
+        # We initialize counters for this specific drive letter if they don't exist
+        if drive_letter not in _win_counters:
+            try:
+                query = win32pdh.OpenQuery()
+                # These paths target the specific logical disk counters
+                r_path = win32pdh.MakeCounterPath((None, "LogicalDisk", drive_letter, None, 0, "Disk Read Bytes/sec"))
+                w_path = win32pdh.MakeCounterPath((None, "LogicalDisk", drive_letter, None, 0, "Disk Write Bytes/sec"))
+                
+                _win_counters[drive_letter] = {
+                    "query": query,
+                    "read": win32pdh.AddCounter(query, r_path),
+                    "write": win32pdh.AddCounter(query, w_path)
+                }
+                # Initial collect to prime the counter
+                win32pdh.CollectQueryData(query)
+            except:
+                continue
+
+        # Get current speed values directly from Windows Performance Counters
+        try:
+            drive_obj = _win_counters[drive_letter]
+            win32pdh.CollectQueryData(drive_obj["query"])
+            
+            # The PDH returns the current rate (Bytes/sec) directly
+            _, r_speed = win32pdh.GetFormattedCounterValue(drive_obj["read"], win32pdh.PDH_FMT_DOUBLE)
+            _, w_speed = win32pdh.GetFormattedCounterValue(drive_obj["write"], win32pdh.PDH_FMT_DOUBLE)
+        except:
+            r_speed, w_speed = 0.0, 0.0
+
+        try:
+            usage = psutil.disk_usage(part.mountpoint)
+            
+            stats.append({
+                "device": part.device,
+                "fstype": part.fstype,
+                "mount": part.mountpoint,
+                # We use the raw current speeds provided by Windows
+                "read_bytes": 0, # Cumulative bytes are harder via PDH, so we focus on speed
+                "read_speed_Bps": r_speed,
+                "write_bytes": 0,
+                "write_speed_Bps": w_speed,
+                "total_mb": usage.total / mb_factor,
+                "used_mb": usage.used / mb_factor,
+                "usage_percent": usage.percent
+            })
+        except:
+            continue
+
+    return stats
+
+# --------------------------------------------------
+# LINUX implementation (as you provided)
+# --------------------------------------------------
+
+def _get_linux_storage_stats(current_io, delta_time):
+    stats = []
+    partitions = [
+        p for p in psutil.disk_partitions(all=False)
+        if os.path.exists(p.mountpoint)
+    ]
+    
+    for p in partitions:
+        device_path = p.device
+        mount = p.mountpoint
         device = os.path.basename(device_path)
         io_device = device
 
-        if io_device not in io_start:
-            # fallback for devices like mmcblk0p1 -> mmcblk0
+        if io_device not in current_io:
             io_device = ''.join(filter(str.isalpha, device))
-            if io_device not in io_start:
-                continue  # skip if no matching device
+            if io_device not in current_io:
+                continue
 
-        read_bytes = io_end[io_device].read_bytes - io_start[io_device].read_bytes
-        write_bytes = io_end[io_device].write_bytes - io_start[io_device].write_bytes
+        io_data = current_io[io_device]
+        read_bytes = io_data.read_bytes
+        write_bytes = io_data.write_bytes
 
-        usage = psutil.disk_usage(mount)
+        prev = _previous_io.get(io_device)
+        read_speed = (read_bytes - prev.read_bytes) / delta_time if prev else 0
+        write_speed = (write_bytes - prev.write_bytes) / delta_time if prev else 0
 
-        stats.append({
-            "device": device_path,  # raw device for internal use
-            "fstype": next((p.fstype for p in partitions if p.mountpoint == mount), "unknown"),
-            "mount": mount,         # **mount point used for label in frontend**
-            "read_bytes": io_end[io_device].read_bytes,
-            "read_speed_Bps": read_bytes / interval,
-            "write_bytes": io_end[io_device].write_bytes,
-            "write_speed_Bps": write_bytes / interval,
-            "total_mb": usage.total / (1024*1024),
-            "used_mb": usage.used / (1024*1024),
-            "usage_percent": usage.percent
-        })
+        try:
+            usage = psutil.disk_usage(mount)
+            stats.append({
+                "device": device_path,
+                "fstype": p.fstype,
+                "mount": mount,
+                "read_bytes": read_bytes,
+                "read_speed_Bps": read_speed,
+                "write_bytes": write_bytes,
+                "write_speed_Bps": write_speed,
+                "total_mb": usage.total / (1024 * 1024),
+                "used_mb": usage.used / (1024 * 1024),
+                "usage_percent": usage.percent
+            })
+        except OSError:
+            continue
+
     return stats
+
+if __name__ == "__main__":
+    # Test loop to see the speeds change
+    import json
+    print("Initializing baseline (first run will show 0 speed)...")
+    get_storage_stats() 
+    
+    while True:
+        time.sleep(1)
+        data = get_storage_stats()
+        print(json.dumps({"storage": data}, indent=4))

@@ -23,3 +23,15 @@ DYNAMIC_DRIVE_CAPACITY_COLOR_HIGH = "#6E162F" # kinda red
 STORAGE_ALERT = False # If true, storage usage will be highlighted when exceeding threshold
 STORAGE_ALERT_THRESHOLD_PERCENT = 90 # Alert on storage usage exceeding this percentage
 STORAGE_ALERT_COLOR = "#5F1228" # Alert color for storage usage exceeding threshold
+
+# --- FILESYSTEM THEMING ---
+# Colors for Read and Write graphs based on Filesystem type
+FS_THEME = {
+    "NTFS":    {"read": "#3b82f6", "write": "#fbbf24"}, # Blue / Amber
+    "FAT32":   {"read": "#06b6d4", "write": "#f43f5e"}, # Cyan / Rose
+    "vfat":    {"read": "#2dd4bf", "write": "#ec4899"}, # Teal / Pink
+    "ext4":    {"read": "#60a5fa", "write": "#22c55e"}, # Light Blue / Green
+    "exFAT":   {"read": "#a78bfa", "write": "#8b5cf6"}, # Light Purple / Violet
+    "APFS":    {"read": "#22d3ee", "write": "#0ea5e9"}, # Cyan / Sky Blue
+    "DEFAULT": {"read": "#94a3b8", "write": "#64748b"}  # Slate / Grey
+}
