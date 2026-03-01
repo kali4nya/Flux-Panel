@@ -13,8 +13,6 @@ INTERVAL_STEP_MS = 250 # step for slider and clamping, trust me 250 is fine
 CORS_ALLOWED_ORIGINS = "*" # dont touch this one
 
 #Real changable settings
-
-
 MAX_GRAPH_POINTS = 20 # Max data points to keep for graphin
 
 DYNAMIC_DRIVE_CAPACITY_COLORS = True # If true, drive boxes will change color based on capacity (green->yellow->red) (DISABLES STORAGE_ALERT_COLOR)
