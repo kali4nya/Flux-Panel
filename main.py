@@ -22,7 +22,24 @@ clients = {}  # { session_id: { "interval": 1000 } }
 # ----------------------------
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template(
+        "index.html",
+        min_interval_ms=config.MIN_INTERVAL_MS,
+        max_interval_ms=config.MAX_INTERVAL_MS,
+        interval_step_ms=config.INTERVAL_STEP_MS,
+        default_interval=config.DEFAULT_INTERVAL_MS,
+        
+        storage_alert=config.STORAGE_ALERT,
+        storage_alert_threshold_percent=config.STORAGE_ALERT_THRESHOLD_PERCENT,
+        storage_alert_color=config.STORAGE_ALERT_COLOR,
+        
+        max_graph_points=config.MAX_GRAPH_POINTS,
+        
+        dynamic_drive_capacity_colors=config.DYNAMIC_DRIVE_CAPACITY_COLORS,
+        dynamic_drive_capacity_color_low=config.DYNAMIC_DRIVE_CAPACITY_COLOR_LOW,
+        dynamic_drive_capacity_color_medium=config.DYNAMIC_DRIVE_CAPACITY_COLOR_MEDIUM,
+        dynamic_drive_capacity_color_high=config.DYNAMIC_DRIVE_CAPACITY_COLOR_HIGH
+    )
 
 # ----------------------------
 # OPTIONAL REST ENDPOINTS

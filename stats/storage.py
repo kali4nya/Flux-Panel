@@ -9,8 +9,8 @@ def get_storage_stats():
             usage = psutil.disk_usage(partition.mountpoint)
             disks.append({
                 "mount": partition.mountpoint,
-                "total_gb": round(usage.total / 1024 / 1024, 2),
-                "used_gb": round(usage.used / 1024 / 1024, 2),
+                "total_mb": round(usage.total / 1024 / 1024, 2),
+                "used_mb": round(usage.used / 1024 / 1024, 2),
                 "usage_percent": usage.percent
             })
         except PermissionError:

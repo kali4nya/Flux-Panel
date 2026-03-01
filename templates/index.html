@@ -16,6 +16,24 @@
 </div>
 
 <main>
+    <!-- VARIABLES PASSED FROM SERVER -->
+    <script>
+        const DEFAULT_POLLING = {{ default_interval }};
+        const MIN_INTERVAL_MS = {{ min_interval_ms }};
+        const MAX_INTERVAL_MS = {{ max_interval_ms }};
+        const INTERVAL_STEP_MS = {{ interval_step_ms }};
+
+        const STORAGE_ALERT = {{ 'true' if storage_alert else 'false' }};
+        const STORAGE_ALERT_THRESHOLD = {{ storage_alert_threshold_percent }};
+        const STORAGE_ALERT_COLOR = "{{ storage_alert_color }}";
+
+        const MAX_GRAPH_POINTS = {{ max_graph_points }};
+
+        const DYNAMIC_DRIVE_COLORS = {{ 'true' if dynamic_drive_capacity_colors else 'false' }};
+        const DYNAMIC_DRIVE_COLOR_LOW = "{{ dynamic_drive_capacity_color_low }}";
+        const DYNAMIC_DRIVE_COLOR_MEDIUM = "{{ dynamic_drive_capacity_color_medium }}";
+        const DYNAMIC_DRIVE_COLOR_HIGH = "{{ dynamic_drive_capacity_color_high }}";
+    </script>
 
     <!-- STAT CARDS -->
     <div class="row container">
@@ -46,15 +64,13 @@
     </div>
 
     <!-- STORAGE / DRIVES -->
-    <div class="row container" id="drivesContainer">
-        <!-- Drives stats will be injected dynamically -->
-    </div>
+    <div class="row container" id="drivesContainer"></div>
 
     <!-- POLLING CONTROL -->
     <div class="row center-control">
         <div class="control-box">
             <span>Polling</span>
-            <input type="range" id="pollingSlider" min="250" max="2000" step="250">
+            <input type="range" id="pollingSlider" min="{{ min_interval_ms }}" max="{{ max_interval_ms }}" step="{{ interval_step_ms }}" value="{{ default_interval }}">
             <span id="pollingValue"></span>
         </div>
     </div>
@@ -71,11 +87,9 @@
             <canvas id="ramChart"></canvas>
         </div>
     </div>
-
 </main>
 
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-
 </body>
 </html>

@@ -1,5 +1,3 @@
-const MAX_POINTS = 15;
-
 /* ------------------ SOCKET & POLLING ------------------ */
 let socket;
 let pollingSlider = document.getElementById("pollingSlider");
@@ -8,7 +6,7 @@ let pollingLabel = document.getElementById("pollingValue");
 /* ------------------ COOKIE ------------------ */
 function getPollingFromCookie() {
     const match = document.cookie.match(/pollingRate=(\d+)/);
-    return match ? parseInt(match[1]) : 1000;
+    return match ? parseInt(match[1]) : null;
 }
 
 function setPollingCookie(value) {
@@ -31,9 +29,9 @@ function createChart(canvasId, lineColor) {
     return new Chart(ctx, {
         type: "line",
         data: {
-            labels: new Array(MAX_POINTS).fill(""),
+            labels: new Array(MAX_GRAPH_POINTS).fill(""),
             datasets: [{
-                data: new Array(MAX_POINTS).fill(null),
+                data: new Array(MAX_GRAPH_POINTS).fill(null),
                 borderColor: lineColor,
                 backgroundColor: gradient,
                 borderWidth: 2,
@@ -66,8 +64,7 @@ function createChart(canvasId, lineColor) {
     });
 }
 
-const cpuChart = createChart("cpuChart", "#3b82f6");
-const ramChart = createChart("ramChart", "#22c55e");
+let cpuChart, ramChart;
 
 function pushData(chart, value) {
     chart.data.datasets[0].data.shift();
@@ -79,12 +76,11 @@ function pushData(chart, value) {
 function initSocket() {
     socket = io();
 
-    // Send initial polling interval
-    const initialInterval = getPollingFromCookie();
-    socket.emit("set_config", { interval: initialInterval });
-
+    const initialInterval = getPollingFromCookie() || DEFAULT_POLLING;
     pollingSlider.value = initialInterval;
     pollingLabel.innerText = initialInterval + " ms";
+
+    socket.emit("set_config", { interval: initialInterval });
 
     socket.on("stats_update", (data) => {
         // CPU
@@ -109,28 +105,46 @@ function initSocket() {
 
         // Drives
         const drivesContainer = document.getElementById("drivesContainer");
-        drivesContainer.innerHTML = ""; // clear previous
+        drivesContainer.innerHTML = "";
 
         if (Array.isArray(data.storage) && data.storage.length > 0) {
             data.storage.forEach((drive) => {
-                let used = drive.used_gb ?? 0;
-                let total = drive.total_gb ?? 0;
+                let used = drive.used_mb ?? 0;
+                let total = drive.total_mb ?? 0;
 
-                // Determine units dynamically
                 let usedValue = used;
                 let totalValue = total;
                 let unit = "GB";
 
                 if (used > 1024) usedValue = used / 1024;
-                else unit = "MB";  // if either value is below 1024, switch to MB
+                else unit = "MB";
                 if (total > 1024) totalValue = total / 1024;
-                else if (unit !== "GB") unit = "MB"; // keep MB if both are under 1024
+                else if (unit !== "GB") unit = "MB";
 
                 const usagePercent = drive.usage_percent ?? 0;
                 const label = drive.mount ?? drive.name ?? "Drive";
 
                 const driveCard = document.createElement("div");
                 driveCard.className = "card stat-card";
+
+                if (DYNAMIC_DRIVE_COLORS) {
+                    let color;
+                    if (usagePercent <= 50) {
+                        // interpolate LOW → MEDIUM
+                        color = interpolateColor(DYNAMIC_DRIVE_COLOR_LOW, DYNAMIC_DRIVE_COLOR_MEDIUM, usagePercent / 50);
+                    } else {
+                        // interpolate MEDIUM → HIGH
+                        color = interpolateColor(DYNAMIC_DRIVE_COLOR_MEDIUM, DYNAMIC_DRIVE_COLOR_HIGH, (usagePercent - 50) / 50);
+                    }
+                    driveCard.style.backgroundColor = color;
+                } else {
+                    if (STORAGE_ALERT && usagePercent >= STORAGE_ALERT_THRESHOLD) {
+                        driveCard.style.backgroundColor = STORAGE_ALERT_COLOR;
+                    } else {
+                        driveCard.style.backgroundColor = ""; // default
+                    }
+                }
+
                 driveCard.innerHTML = `
                     <div class="stat-label">${label}</div>
                     <div class="stat-value">
@@ -142,7 +156,6 @@ function initSocket() {
             });
         }
 
-        // Update charts
         pushData(cpuChart, cpuUtilization);
         pushData(ramChart, ramUsagePercent);
     });
@@ -166,4 +179,28 @@ function updatePolling() {
 pollingSlider.addEventListener("input", updatePolling);
 
 /* ------------------ INIT ------------------ */
-initSocket();
+window.addEventListener("load", () => {
+    cpuChart = createChart("cpuChart", "#3b82f6");
+    ramChart = createChart("ramChart", "#22c55e");
+    initSocket();
+});
+
+// Helper to interpolate two hex colors
+function interpolateColor(color1, color2, factor) {
+    const c1 = parseInt(color1.slice(1), 16);
+    const c2 = parseInt(color2.slice(1), 16);
+
+    const r1 = (c1 >> 16) & 0xff;
+    const g1 = (c1 >> 8) & 0xff;
+    const b1 = c1 & 0xff;
+
+    const r2 = (c2 >> 16) & 0xff;
+    const g2 = (c2 >> 8) & 0xff;
+    const b2 = c2 & 0xff;
+
+    const r = Math.round(r1 + factor * (r2 - r1));
+    const g = Math.round(g1 + factor * (g2 - g1));
+    const b = Math.round(b1 + factor * (b2 - b1));
+
+    return `rgb(${r},${g},${b})`;
+}

@@ -4,7 +4,8 @@ Flux-Panel is a simple, lightweight, easy to deploy server management dashbord
 It's designed to be minimal, modern, and easy to use
 The whole thing is build in a way where you can easily build you own frontend if you want
 
-![main_interface.png](screenshots/main_interface.png)
+![main_interface_1.png](screenshots/main_interface_1.png)
+![main_interface_2.png](screenshots/main_interface_2.png)
 
 ## Features
 
