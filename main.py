@@ -20,9 +20,9 @@ clients = {}  # { session_id: { "interval": 1000 } }
 # ----------------------------
 # FRONTEND
 # ----------------------------
+# MAIN ROUTE
 @app.route("/")
 def index():
-    
     # variables going to index.html, you can add more if you want, just make sure to add them to config.py and pass them here
     return render_template(
         "index.html",
@@ -37,6 +37,24 @@ def index():
         
         max_graph_points=config.MAX_GRAPH_POINTS,
         
+        dynamic_drive_capacity_colors=config.DYNAMIC_DRIVE_CAPACITY_COLORS,
+        dynamic_drive_capacity_color_low=config.DYNAMIC_DRIVE_CAPACITY_COLOR_LOW,
+        dynamic_drive_capacity_color_medium=config.DYNAMIC_DRIVE_CAPACITY_COLOR_MEDIUM,
+        dynamic_drive_capacity_color_high=config.DYNAMIC_DRIVE_CAPACITY_COLOR_HIGH
+    )
+
+# STORAGE ROUTE
+@app.route("/storage")
+def storage_page():
+    return render_template(
+        "storage.html",
+        default_interval=config.DEFAULT_INTERVAL_MS,
+        min_interval_ms=config.MIN_INTERVAL_MS,
+        max_interval_ms=config.MAX_INTERVAL_MS,
+        interval_step_ms=config.INTERVAL_STEP_MS,
+        storage_alert=config.STORAGE_ALERT,
+        storage_alert_threshold_percent=config.STORAGE_ALERT_THRESHOLD_PERCENT,
+        storage_alert_color=config.STORAGE_ALERT_COLOR,
         dynamic_drive_capacity_colors=config.DYNAMIC_DRIVE_CAPACITY_COLORS,
         dynamic_drive_capacity_color_low=config.DYNAMIC_DRIVE_CAPACITY_COLOR_LOW,
         dynamic_drive_capacity_color_medium=config.DYNAMIC_DRIVE_CAPACITY_COLOR_MEDIUM,

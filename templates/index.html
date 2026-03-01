@@ -8,9 +8,8 @@
 <body>
 
 <div class="navbar">
-    <a class="active" href="/">Dashboard</a>
-    <a href="#">Storage</a>
-    <a href="#">Drives</a>
+    <a class="{{ 'active' if request.path == '/' else '' }}" href="/">Dashboard</a>
+    <a class="{{ 'active' if request.path == '/storage' else '' }}" href="/storage">Storage</a>
     <a href="#">Alert Log</a>
     <a href="#">Settings</a>
 </div>

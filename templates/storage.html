@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Storage Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/storage.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="navbar">
+    <a class="{{ 'active' if request.path == '/' else '' }}" href="/">Dashboard</a>
+    <a class="{{ 'active' if request.path == '/storage' else '' }}" href="/storage">Storage</a>
+    <a href="#">Alert Log</a>
+    <a href="#">Settings</a>
+</div>
+
+<main>
+    <div class="container" id="drivesContainer"></div>
+</main>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='js/storage.js') }}"></script>
+</body>
+</html>

@@ -4,7 +4,7 @@ PORT = 5000 # you can change this
 DEBUG = True # dont touch for now
 
 # SocketIO / client settings
-DEFAULT_INTERVAL_MS = 1000 # you can change this one
+DEFAULT_INTERVAL_MS = 500 # you can change this one
 MIN_INTERVAL_MS = 250 # better dont go below 100
 MAX_INTERVAL_MS = 2500 # you can change this freely
 INTERVAL_STEP_MS = 250 # step for slider and clamping, trust me 250 is fine
