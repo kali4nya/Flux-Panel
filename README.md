@@ -5,6 +5,7 @@ It's designed to be minimal, modern, and easy to use
 The whole thing is build in a way where you can easily build you own frontend if you want
 
 ![main_interface_1.png](screenshots/main_interface_1.png)
+<br>
 ![main_interface_2.png](screenshots/main_interface_2.png)
 
 ## Features
