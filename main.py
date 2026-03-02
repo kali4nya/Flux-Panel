@@ -23,41 +23,52 @@ clients = {}  # { session_id: { "interval": 1000 } }
 @app.route("/")
 def index():
     return render_template(
+        # index config variables
         "index.html",
+        default_interval=config.DEFAULT_INTERVAL_MS,
         min_interval_ms=config.MIN_INTERVAL_MS,
         max_interval_ms=config.MAX_INTERVAL_MS,
         interval_step_ms=config.INTERVAL_STEP_MS,
-        default_interval=config.DEFAULT_INTERVAL_MS,
-        storage_alert=config.STORAGE_ALERT,
-        storage_alert_threshold_percent=config.STORAGE_ALERT_THRESHOLD_PERCENT,
-        storage_alert_color=config.STORAGE_ALERT_COLOR,
-        max_graph_points=config.MAX_GRAPH_POINTS,
-        dynamic_drive_capacity_colors=config.DYNAMIC_DRIVE_CAPACITY_COLORS,
-        dynamic_drive_capacity_color_low=config.DYNAMIC_DRIVE_CAPACITY_COLOR_LOW,
-        dynamic_drive_capacity_color_medium=config.DYNAMIC_DRIVE_CAPACITY_COLOR_MEDIUM,
-        dynamic_drive_capacity_color_high=config.DYNAMIC_DRIVE_CAPACITY_COLOR_HIGH
+        
+        index_max_graph_points=config.INDEX_MAX_GRAPH_POINTS,
+        
+        index_dynamic_drive_capacity_colors=config.INDEX_DYNAMIC_DRIVE_CAPACITY_COLORS,
+        index_dynamic_drive_capacity_color_low=config.INDEX_DYNAMIC_DRIVE_CAPACITY_COLOR_LOW,
+        index_dynamic_drive_capacity_color_medium=config.INDEX_DYNAMIC_DRIVE_CAPACITY_COLOR_MEDIUM,
+        index_dynamic_drive_capacity_color_high=config.INDEX_DYNAMIC_DRIVE_CAPACITY_COLOR_HIGH,
+        
+        index_storage_alert=config.INDEX_STORAGE_ALERT,
+        index_storage_alert_threshold_percent=config.INDEX_STORAGE_ALERT_THRESHOLD_PERCENT,
+        index_storage_alert_color=config.INDEX_STORAGE_ALERT_COLOR
     )
 
 @app.route("/storage")
 def storage_page():
-    # Added missing variables to match index.html expectations
+    # Sorage config variables
     return render_template(
         "storage.html",
         default_interval=config.DEFAULT_INTERVAL_MS,
         min_interval_ms=config.MIN_INTERVAL_MS,
         max_interval_ms=config.MAX_INTERVAL_MS,
         interval_step_ms=config.INTERVAL_STEP_MS,
-        max_graph_points=config.MAX_GRAPH_POINTS, # Needed if storage has graphs
-        storage_alert=config.STORAGE_ALERT,
-        storage_alert_threshold_percent=config.STORAGE_ALERT_THRESHOLD_PERCENT,
-        storage_alert_color=config.STORAGE_ALERT_COLOR,
-        dynamic_drive_capacity_colors=config.DYNAMIC_DRIVE_CAPACITY_COLORS,
-        dynamic_drive_capacity_color_low=config.DYNAMIC_DRIVE_CAPACITY_COLOR_LOW,
-        dynamic_drive_capacity_color_medium=config.DYNAMIC_DRIVE_CAPACITY_COLOR_MEDIUM,
-        dynamic_drive_capacity_color_high=config.DYNAMIC_DRIVE_CAPACITY_COLOR_HIGH,
+        
+        storage_max_graph_points=config.STORAGE_MAX_GRAPH_POINTS,
+        
+        storage_bar_color=config.STORAGE_BAR_COLOR,
+        
+        storage_dynamic_drive_capacity_colors=config.STORAGE_DYNAMIC_DRIVE_CAPACITY_COLORS,
+        storage_dynamic_drive_capacity_color_low=config.STORAGE_DYNAMIC_DRIVE_CAPACITY_COLOR_LOW,
+        storage_dynamic_drive_capacity_color_medium=config.STORAGE_DYNAMIC_DRIVE_CAPACITY_COLOR_MEDIUM,
+        storage_dynamic_drive_capacity_color_high=config.STORAGE_DYNAMIC_DRIVE_CAPACITY_COLOR_HIGH,
+        
+        storage_storage_alert=config.STORAGE_STORAGE_ALERT,
+        storage_storage_alert_threshold_percent=config.STORAGE_STORAGE_ALERT_THRESHOLD_PERCENT,
+        storage_storage_alert_color=config.STORAGE_STORAGE_ALERT_COLOR,
+        
         fs_theme=config.FS_THEME
     )
-
+        
+        
 # ----------------------------
 # OPTIONAL REST ENDPOINTS
 # ----------------------------

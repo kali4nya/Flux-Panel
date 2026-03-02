@@ -21,16 +21,16 @@
         const MAX_INTERVAL_MS = {{ max_interval_ms }};
         const INTERVAL_STEP_MS = {{ interval_step_ms }};
 
-        const STORAGE_ALERT = {{ 'true' if storage_alert else 'false' }};
-        const STORAGE_ALERT_THRESHOLD_PERCENT = {{ storage_alert_threshold_percent }};
-        const STORAGE_ALERT_COLOR = "{{ storage_alert_color }}";
+        const MAX_GRAPH_POINTS = {{ index_max_graph_points }};
 
-        const MAX_GRAPH_POINTS = {{ max_graph_points }};
+        const DYNAMIC_DRIVE_COLORS = {{ 'true' if index_dynamic_drive_capacity_colors else 'false' }};
+        const DYNAMIC_DRIVE_COLOR_LOW = "{{ index_dynamic_drive_capacity_color_low }}";
+        const DYNAMIC_DRIVE_COLOR_MEDIUM = "{{ index_dynamic_drive_capacity_color_medium }}";
+        const DYNAMIC_DRIVE_COLOR_HIGH = "{{ index_dynamic_drive_capacity_color_high }}";
 
-        const DYNAMIC_DRIVE_COLORS = {{ 'true' if dynamic_drive_capacity_colors else 'false' }};
-        const DYNAMIC_DRIVE_COLOR_LOW = "{{ dynamic_drive_capacity_color_low }}";
-        const DYNAMIC_DRIVE_COLOR_MEDIUM = "{{ dynamic_drive_capacity_color_medium }}";
-        const DYNAMIC_DRIVE_COLOR_HIGH = "{{ dynamic_drive_capacity_color_high }}";
+        const STORAGE_ALERT = {{ 'true' if index_storage_alert else 'false' }};
+        const STORAGE_ALERT_THRESHOLD_PERCENT = {{ index_storage_alert_threshold_percent }};
+        const STORAGE_ALERT_COLOR = "{{ index_storage_alert_color }}";
     </script>
 
     <!-- STAT CARDS -->

@@ -18,6 +18,20 @@
         const MIN_INTERVAL_MS = {{ min_interval_ms }};
         const MAX_INTERVAL_MS = {{ max_interval_ms }};
         const INTERVAL_STEP_MS = {{ interval_step_ms }};
+
+        const MAX_GRAPH_POINTS = {{ storage_max_graph_points }};
+
+        const BAR_COLOR = "{{ storage_bar_color }}";
+
+        const DYNAMIC_DRIVE_COLORS = {{ 'true' if storage_dynamic_drive_capacity_colors else 'false' }};
+        const DYNAMIC_DRIVE_COLOR_LOW = "{{ storage_dynamic_drive_capacity_color_low }}";
+        const DYNAMIC_DRIVE_COLOR_MEDIUM = "{{ storage_dynamic_drive_capacity_color_medium }}";
+        const DYNAMIC_DRIVE_COLOR_HIGH = "{{ storage_dynamic_drive_capacity_color_high }}";
+
+        const STORAGE_ALERT = {{ 'true' if storage_storage_alert else 'false' }};
+        const STORAGE_ALERT_THRESHOLD_PERCENT = {{ storage_storage_alert_threshold_percent }};
+        const STORAGE_ALERT_COLOR = "{{ storage_storage_alert_color }}";
+
         const FS_THEME = {{ fs_theme | tojson }};
     </script>
 

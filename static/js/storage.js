@@ -65,7 +65,11 @@ function createDriveChart(canvasId, readColor, writeColor) {
                 x: { display: false },
                 y: {
                     beginAtZero: true,
-                    ticks: { display: true, font: { size: 9 }, callback: (v) => v === 0 ? "0" : v.toFixed(1) },
+                    ticks: { 
+                        display: true, 
+                        font: { size: 9 }, 
+                        callback: (v) => v === 0 ? "0" : v.toFixed(1) 
+                    },
                     grid: { color: "rgba(255, 255, 255, 0.05)" }
                 }
             },
@@ -99,7 +103,6 @@ function updateDrives(storage) {
         const readMBps = drive.read_speed_Bps / (1024 * 1024);
         const writeMBps = drive.write_speed_Bps / (1024 * 1024);
 
-        // Get Dynamic Color Set
         const colors = getFSColorSet(drive.fstype);
 
         if (!card) {
@@ -114,7 +117,9 @@ function updateDrives(storage) {
                         <span class="fs-badge" style="border: 1px solid ${colors.write}44; color: ${colors.write}">${drive.fstype}</span>
                     </div>
                     <div class="usage-bar-container">
-                        <div class="usage-bar"><div class="usage-fill"></div></div>
+                        <div class="usage-bar">
+                            <div class="usage-fill"></div>
+                        </div>
                     </div>
                     <div class="usage-text"></div>
                 </div>
@@ -127,20 +132,86 @@ function updateDrives(storage) {
                 </div>
             `;
             drivesContainer.appendChild(card);
-            
-            // Apply both dynamic Read and Write colors
             driveCharts[cleanId] = createDriveChart(`chart-${cleanId}`, colors.read, colors.write);
         }
 
-        // Update Values
-        card.querySelector(".usage-fill").style.width = drive.usage_percent + "%";
+        const usageFill = card.querySelector(".usage-fill");
+
+        // ----------------- BAR COLOR LOGIC -----------------
+        let finalBarColor;
+
+        if (DYNAMIC_DRIVE_COLORS === true) {
+            // Dynamic gradient mode (alert ignored)
+            finalBarColor = getDynamicCapacityColor(drive.usage_percent);
+        } else {
+            // Normal mode
+            const baseBarColor = resolveBarColor(drive, colors);
+
+            if (
+                STORAGE_ALERT === true &&
+                drive.usage_percent >= STORAGE_ALERT_THRESHOLD_PERCENT
+            ) {
+                finalBarColor = STORAGE_ALERT_COLOR;
+            } else {
+                finalBarColor = baseBarColor;
+            }
+        }
+
+        usageFill.style.background = finalBarColor;
+        // --------------------------------------------------
+        function resolveBarColor(drive, colors) {
+            if (BAR_COLOR === "READ") return colors.read;
+            if (BAR_COLOR === "WRITE") return colors.write;
+            return BAR_COLOR; // assume it's a valid CSS color string
+        }
+        // --------------------------------------------------
+        function getDynamicCapacityColor(percent) {
+            if (percent <= 50) {
+                const factor = percent / 50; // 0 → 1
+                return interpolateColor(
+                    DYNAMIC_DRIVE_COLOR_LOW,
+                    DYNAMIC_DRIVE_COLOR_MEDIUM,
+                    factor
+                );
+            } else {
+                const factor = (percent - 50) / 50; // 0 → 1
+                return interpolateColor(
+                    DYNAMIC_DRIVE_COLOR_MEDIUM,
+                    DYNAMIC_DRIVE_COLOR_HIGH,
+                    factor
+                );
+            }
+        }
+        // --------------------------------------------------
+        // Helper to interpolate two hex colors
+        function interpolateColor(color1, color2, factor) {
+            const c1 = parseInt(color1.slice(1), 16);
+            const c2 = parseInt(color2.slice(1), 16);
+
+            const r1 = (c1 >> 16) & 0xff;
+            const g1 = (c1 >> 8) & 0xff;
+            const b1 = c1 & 0xff;
+
+            const r2 = (c2 >> 16) & 0xff;
+            const g2 = (c2 >> 8) & 0xff;
+            const b2 = c2 & 0xff;
+
+            const r = Math.round(r1 + factor * (r2 - r1));
+            const g = Math.round(g1 + factor * (g2 - g1));
+            const b = Math.round(b1 + factor * (b2 - b1));
+
+            return `rgb(${r},${g},${b})`;
+        }
+        // --------------------------------------------------
+
+        usageFill.style.width = drive.usage_percent + "%";
+
         card.querySelector(".usage-text").innerText = 
             `${formatBytes(drive.used_mb * 1024 * 1024)} / ${formatBytes(drive.total_mb * 1024 * 1024)} (${drive.usage_percent.toFixed(1)}%)`;
-        
+
         card.querySelector(".read-label").innerText = `R: ${readMBps.toFixed(2)} MB/s`;
         card.querySelector(".write-label").innerText = `W: ${writeMBps.toFixed(2)} MB/s`;
 
-        // Update Chart
         const chart = driveCharts[cleanId];
         chart.data.datasets[0].data.shift();
         chart.data.datasets[0].data.push(readMBps);
@@ -152,6 +223,7 @@ function updateDrives(storage) {
 
 /* ------------------ POLLING CONTROL ------------------ */
 let debounceTimer;
+
 function updatePolling() {
     const newInterval = parseInt(pollingSlider.value);
     pollingLabel.innerText = newInterval + " ms";
@@ -168,6 +240,7 @@ function updatePolling() {
 /* ------------------ SOCKET INIT ------------------ */
 function initSocket() {
     socket = io();
+
     const initialInterval = getPollingFromCookie() || DEFAULT_POLLING;
     pollingSlider.value = initialInterval;
     pollingLabel.innerText = initialInterval + " ms";
@@ -181,3 +254,4 @@ function initSocket() {
 }
 
 window.addEventListener("load", initSocket);
+
