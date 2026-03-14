@@ -186,8 +186,8 @@ function updatePolling() {
 
 /* ------------------ INIT ------------------ */
 window.addEventListener("load", () => {
-    cpuChart = createChart("cpuChart", "#3b82f6");
-    ramChart = createChart("ramChart", "#22c55e");
+    cpuChart = createChart("cpuChart", CPU_GRAPH_COLOR);
+    ramChart = createChart("ramChart", RAM_GRAPH_COLOR);
     initSocket();
 });
 

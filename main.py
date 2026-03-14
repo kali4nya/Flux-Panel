@@ -31,6 +31,8 @@ def index():
         interval_step_ms=config.INTERVAL_STEP_MS,
         
         index_max_graph_points=config.INDEX_MAX_GRAPH_POINTS,
+        index_cpu_graph_color=config.INDEX_CPU_GRAPH_COLOR,
+        index_ram_graph_color=config.INDEX_RAM_GRAPH_COLOR,
         
         index_dynamic_drive_capacity_colors=config.INDEX_DYNAMIC_DRIVE_CAPACITY_COLORS,
         index_dynamic_drive_capacity_color_low=config.INDEX_DYNAMIC_DRIVE_CAPACITY_COLOR_LOW,

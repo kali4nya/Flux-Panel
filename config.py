@@ -15,6 +15,8 @@ INTERVAL_STEP_MS = 250 # step for slider and clamping, trust me 250 is fine
 
 #CUSTOMIZATION FOR MAIN PAGE
 INDEX_MAX_GRAPH_POINTS = 20 # Max data points to keep for graphin 
+INDEX_CPU_GRAPH_COLOR = "#3b82f6" # Max data points to keep for CPU graphing
+INDEX_RAM_GRAPH_COLOR = "#22c55e"
 
 INDEX_DYNAMIC_DRIVE_CAPACITY_COLORS = False # If true, drive boxes will change color based on capacity, (interpolates LOW->MEDIUM->HIGH) (DISABLES STORAGE_ALERT_COLOR)
 INDEX_DYNAMIC_DRIVE_CAPACITY_COLOR_LOW = "#308833" # kinda green
